@@ -1,0 +1,14 @@
+[[manager.prepend_keymap]]
+on = [ "l" ]
+run = "open"
+desc = "Open file"
+
+[[manager.prepend_keymap]]
+on = [ "o" ]
+run = "shell 'swayimg \"$@\"' --confirm"
+desc = "Open with swayimg"
+
+[[manager.prepend_keymap]]
+on = [ "<Enter>" ]
+run = "open"
+desc = "Open file"

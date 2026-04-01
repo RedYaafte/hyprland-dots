@@ -1,0 +1,11 @@
+# Wallpapers (archivos pesados, usar git-lfs o ignorar)
+wallpapers/
+screenshots/
+
+# Archivos sensibles
+.env
+*.secret
+
+# Backups
+*.backup
+*.bak
