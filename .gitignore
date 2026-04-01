@@ -9,3 +9,21 @@ screenshots/
 # Backups
 *.backup
 *.bak
+
+# Archivos temporales
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Directorios específicos
+wallpapers/*.jpg  # Si quieres excluir wallpapers grandes
+wallpapers/*.png
+
+# Archivos personales (si tienes datos sensibles)
+.config/hypr/hyprland.conf.bak
+.env
+
+# Scripts compilados o generados
+*.pyc
+__pycache__/
