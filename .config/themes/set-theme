@@ -1,25 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-themes_dir="$HOME/.config/themes"
-theme_name="${1:?Uso: set-theme <tema>}"
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
+themes_dir="$config_dir/themes"
+theme_name="${1:?Usage: set-theme <theme>}"
 theme_dir="$themes_dir/$theme_name"
-[[ "$theme_name" != "current" && -f "$theme_dir/colors.toml" ]] || { printf 'Tema no válido: %s\n' "$theme_name" >&2; exit 1; }
+[[ "$theme_name" != "current" && -f "$theme_dir/colors.toml" ]] || { printf 'Invalid theme: %s\n' "$theme_name" >&2; exit 1; }
 
 temporary_link="$themes_dir/.current.new"
 ln -sfn "$theme_name" "$temporary_link"
 mv -Tf "$temporary_link" "$themes_dir/current"
 
-install -d "$HOME/.config/waybar" "$HOME/.config/walker/themes/personal" "$HOME/.config/swayosd" "$HOME/.config/ghostty/themes"
-install -m 644 "$theme_dir/waybar.css" "$HOME/.config/waybar/colors.css"
-install -m 644 "$theme_dir/walker.css" "$HOME/.config/walker/themes/personal/colors.css"
-install -m 644 "$theme_dir/swayosd.css" "$HOME/.config/swayosd/colors.css"
-install -m 644 "$theme_dir/ghostty.conf" "$HOME/.config/ghostty/themes/Black Ember"
+install -d "$config_dir/waybar" "$config_dir/walker/themes/personal" "$config_dir/swayosd" "$config_dir/ghostty/themes"
+install -m 644 "$theme_dir/waybar.css" "$config_dir/waybar/colors.css"
+install -m 644 "$theme_dir/walker.css" "$config_dir/walker/themes/personal/colors.css"
+install -m 644 "$theme_dir/swayosd.css" "$config_dir/swayosd/colors.css"
+install -m 644 "$theme_dir/ghostty.conf" "$config_dir/ghostty/themes/Black Ember"
 
 pkill -SIGUSR2 waybar 2>/dev/null || true
 hyprctl reload >/dev/null 2>&1 || true
 pkill -x swayosd-server 2>/dev/null || true
 setsid swayosd-server >/dev/null 2>&1 &
-"$HOME/.config/hypr/scripts/wallpaper.sh" theme >/dev/null 2>&1 || true
+"$config_dir/hypr/scripts/wallpaper.sh" theme >/dev/null 2>&1 || true
 systemctl --user restart app-walker@autostart.service >/dev/null 2>&1 || true
-printf 'Tema activo: %s\n' "$theme_name"
+printf 'Active theme: %s\n' "$theme_name"

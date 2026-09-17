@@ -10,9 +10,15 @@ local theme = {
 local loaded, selected = pcall(dofile, home .. "/.config/themes/current/hyprland.lua")
 if loaded and type(selected) == "table" then theme = selected end
 
--- Hardware-specific values belong in a future desktop profile.
-hl.monitor({ output = "HDMI-A-1", mode = "3440x1440@50", position = "0x0", scale = 1 })
-hl.monitor({ output = "HDMI-A-2", mode = "1920x1080@60", position = "3440x0", scale = 1, transform = 1 })
+local profile_name = os.getenv("HYPRLAND_PROFILE") or "default"
+local profile_path = home .. "/.config/hypr/profiles/" .. profile_name .. ".lua"
+local profile = {
+    monitors = { { output = "", mode = "preferred", position = "auto", scale = 1 } },
+}
+local profile_loaded, selected_profile = pcall(dofile, profile_path)
+if profile_loaded and type(selected_profile) == "table" then profile = selected_profile end
+
+for _, monitor in ipairs(profile.monitors or {}) do hl.monitor(monitor) end
 
 local terminal = "ghostty"
 local file_manager = "dolphin"
@@ -20,7 +26,14 @@ local scripts = home .. "/.config/hypr/scripts/"
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("hyprpaper &")
-    hl.exec_cmd(scripts .. "toggle-hdmi-a-2-orientation.sh apply")
+    if profile.orientation then
+        local rotation = profile.orientation
+        hl.exec_cmd(string.format(
+            "%s apply --output %q --mode %q --position %q --initial %q",
+            scripts .. "toggle-hdmi-a-2-orientation.sh", rotation.output, rotation.mode,
+            rotation.position, rotation.initial or "vertical"
+        ))
+    end
     hl.exec_cmd("dunst")
     hl.exec_cmd("/usr/lib/polkit-kde-authentication-agent-1")
     hl.exec_cmd("wl-paste --watch cliphist store")
@@ -78,7 +91,14 @@ hl.bind(mod .. " + CTRL + T", hl.dsp.exec_cmd(home .. "/.config/themes/select-th
 hl.bind(mod .. " + V", hl.dsp.exec_cmd(scripts .. "toggle_float.sh"))
 hl.bind(mod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mod .. " + J", hl.dsp.layout("togglesplit"))
-hl.bind(mod .. " + CTRL + O", hl.dsp.exec_cmd(scripts .. "toggle-hdmi-a-2-orientation.sh"))
+if profile.orientation then
+    local rotation = profile.orientation
+    hl.bind(mod .. " + CTRL + O", hl.dsp.exec_cmd(string.format(
+        "%s toggle --output %q --mode %q --position %q --initial %q",
+        scripts .. "toggle-hdmi-a-2-orientation.sh", rotation.output, rotation.mode,
+        rotation.position, rotation.initial or "vertical"
+    )))
+end
 
 for _, direction in ipairs({ "left", "right", "up", "down" }) do
     hl.bind(mod .. " + " .. direction, hl.dsp.focus({ direction = direction }))

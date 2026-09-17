@@ -1,50 +1,81 @@
-#!/bin/bash
-# install.sh — Instala los dotfiles en ~/.config
+#!/usr/bin/env bash
+# Install the included configuration into ~/.config.
+set -euo pipefail
 
-DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG="$HOME/.config"
+dotfiles_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}"
+backup=true
+
+usage() {
+    printf 'Usage: %s [--no-backup]\n' "${0##*/}"
+}
+
+case "${1:-}" in
+    "") ;;
+    --no-backup) backup=false ;;
+    --help|-h) usage; exit 0 ;;
+    *) usage >&2; exit 2 ;;
+esac
 
 configs=(hypr waybar ghostty nvim dunst yazi mpv systemd themes elephant walker swayosd)
+backup_dir=""
 
-for dir in "${configs[@]}"; do
-    src="$DOTFILES_DIR/.config/$dir"
-    dst="$CONFIG/$dir"
-    if [ -d "$src" ]; then
-        mkdir -p "$dst"
-        cp -r "$src/." "$dst/"
-        echo "✓ $dir"
+backup_existing() {
+    local name="$1" destination="$2"
+    [[ "$backup" == true && -e "$destination" ]] || return 0
+
+    if [[ -z "$backup_dir" ]]; then
+        backup_dir="$state_dir/hyprland-dots/backups/$(date +%Y%m%d-%H%M%S)"
+        mkdir -p "$backup_dir"
     fi
+
+    cp -a "$destination" "$backup_dir/$name"
+}
+
+mkdir -p "$config_dir"
+for name in "${configs[@]}"; do
+    source_dir="$dotfiles_dir/.config/$name"
+    destination="$config_dir/$name"
+    [[ -d "$source_dir" ]] || continue
+
+    backup_existing "$name" "$destination"
+    mkdir -p "$destination"
+    cp -a "$source_dir/." "$destination/"
+    printf 'Installed %s\n' "$name"
 done
 
-# New installations use Black Ember. Preserve an existing selection.
-if [ -d "$CONFIG/themes/black-ember" ] && [ ! -e "$CONFIG/themes/current" ]; then
-    ln -s "black-ember" "$CONFIG/themes/current"
-    echo "✓ tema por defecto: Black Ember"
+# New installations use Black Ember. Preserve an existing theme selection.
+if [[ -d "$config_dir/themes/black-ember" && ! -e "$config_dir/themes/current" ]]; then
+    ln -s "black-ember" "$config_dir/themes/current"
+    printf 'Selected default theme: Black Ember\n'
 fi
 
-# Hacer ejecutables los scripts
-chmod +x "$CONFIG/hypr/scripts/wallpaper.sh"
-chmod +x "$CONFIG/hypr/scripts/launch-walker"
-chmod +x "$CONFIG/hypr/scripts/system-menu"
-chmod +x "$CONFIG/hypr/scripts/system-action"
-chmod +x "$CONFIG/hypr/scripts/launch-screensaver"
-chmod +x "$CONFIG/hypr/scripts/screensaver"
-chmod +x "$CONFIG/hypr/scripts/toggle-hdmi-a-2-orientation.sh"
-chmod +x "$CONFIG/hypr/scripts/toggle_float.sh"
-chmod +x "$CONFIG/hypr/scripts/volume-osd.sh"
-chmod +x "$CONFIG/hypr/scripts/brightness-ddc.sh"
-chmod +x "$CONFIG/themes/set-theme"
-chmod +x "$CONFIG/themes/select-theme-walker"
+scripts=(
+    hypr/scripts/wallpaper.sh
+    hypr/scripts/launch-walker
+    hypr/scripts/system-menu
+    hypr/scripts/system-action
+    hypr/scripts/launch-screensaver
+    hypr/scripts/screensaver
+    hypr/scripts/toggle-hdmi-a-2-orientation.sh
+    hypr/scripts/toggle_float.sh
+    hypr/scripts/volume-osd.sh
+    hypr/scripts/brightness-ddc.sh
+    themes/set-theme
+    themes/select-theme-walker
+    ghostty/greeting.sh
+)
+for script in "${scripts[@]}"; do
+    [[ -f "$config_dir/$script" ]] && chmod +x "$config_dir/$script"
+done
 
-if [ -f "$CONFIG/themes/set-theme" ] && [ -L "$CONFIG/themes/current" ]; then
-    "$CONFIG/themes/set-theme" "$(basename "$(readlink "$CONFIG/themes/current")")" || true
+if [[ -f "$config_dir/themes/set-theme" && -L "$config_dir/themes/current" ]]; then
+    "$config_dir/themes/set-theme" "$(basename "$(readlink "$config_dir/themes/current")")" || true
 fi
-chmod +x "$CONFIG/ghostty/greeting.sh"
 
-echo ""
-echo "✅ Dotfiles instalados."
-echo ""
-echo "⚠️  Recuerda:"
-echo "  - Ajusta el monitor en hyprpaper.conf (actualmente HDMI-A-1)"
-echo "  - Exporta LINEAR_API_KEY en tu .bashrc si usas el greeting de ghostty"
-echo "  - Los wallpapers deben estar en ~/Wallpapers/{morning,afternoon,night,video}/"
+printf '\nDotfiles installed.\n'
+if [[ -n "$backup_dir" ]]; then
+    printf 'Existing configuration backed up to: %s\n' "$backup_dir"
+fi
+printf 'Log out and start a new Hyprland session to apply compositor changes.\n'

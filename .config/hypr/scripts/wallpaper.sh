@@ -1,5 +1,6 @@
 #!/bin/bash
 
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}"
 MONITORS=($(hyprctl monitors | grep "^Monitor" | awk '{print $2}'))
 WALL_DIR="$HOME/Wallpapers"
 
@@ -38,7 +39,7 @@ apply_theme_wallpapers() {
 # A selected theme owns the startup wallpaper; time-based backgrounds remain
 # available through the explicit morning/afternoon/night shortcuts.
 if [[ -z "$MODE" || "$MODE" = "theme" ]]; then
-    THEME_WALLPAPER_CONF="$HOME/.config/themes/current/wallpaper.conf"
+    THEME_WALLPAPER_CONF="$config_dir/themes/current/wallpaper.conf"
     if [[ -r "$THEME_WALLPAPER_CONF" ]]; then
         THEME_WALLPAPER=$(sed -n 's/^path = "\(.*\)"$/\1/p' "$THEME_WALLPAPER_CONF" | head -n 1)
         THEME_WALLPAPER="${THEME_WALLPAPER/#\~/$HOME}"

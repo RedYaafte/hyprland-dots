@@ -16,8 +16,8 @@ a clean Arch installation.
 - Theme-aware Walker, Waybar, SwayOSD, Hyprland, Ghostty, and wallpapers.
 - Separate horizontal and vertical Black Ember wallpapers.
 - Dynamic time-based or video wallpapers remain available through shortcuts.
-- Multimedia controls, SwayOSD volume feedback, DDC/CI monitor brightness, and
-  a persistent monitor-orientation toggle.
+- Multimedia controls, SwayOSD volume feedback, and optional DDC/CI monitor
+  brightness.
 
 ## Stack
 
@@ -46,8 +46,11 @@ chmod +x install.sh
 ./install.sh
 ```
 
-The installer copies the included configuration to `~/.config`. On a fresh
-installation, it selects Black Ember as the default theme.
+The installer copies the included configuration to `~/.config`. Existing
+configuration directories are copied to
+`~/.local/state/hyprland-dots/backups/<timestamp>/` first; pass `--no-backup`
+only when that recovery copy is not needed. On a fresh installation, it selects
+Black Ember as the default theme.
 
 ### Dependencies
 
@@ -56,7 +59,7 @@ installation, it selects Black Ember as the default theme.
 paru -S hyprland hyprpaper hyprlock hypridle waybar walker elephant-all \
   dunst ghostty mpvpaper grim slurp wl-clipboard cliphist playerctl jq \
   brightnessctl ddcutil swayosd polkit-kde-agent uwsm wireplumber pipewire \
-  nerd-fonts-jetbrains-mono yazi figlet lolcat
+  nerd-fonts-jetbrains-mono yazi figlet
 ```
 
 ## Black Ember wallpapers
@@ -98,19 +101,19 @@ Time-based and video wallpaper shortcuts use this separate structure:
 | `Super + F5` to `F8` | Morning, afternoon, night, and video wallpapers |
 | `Print` / `Shift + Print` | Region / full-screen screenshot to clipboard |
 
-## Hardware notes
+## Hardware profiles
 
-The default Lua configuration currently includes a desktop-specific ultrawide
-monitor and a vertically rotated secondary monitor. Adjust the monitor section
-in `~/.config/hypr/hyprland.lua` before using it on another machine.
+The default profile uses every monitor's preferred mode and requires no output
+names. Your current ultrawide-plus-vertical-monitor layout is preserved in the
+optional `yafte-desktop` profile. Start Hyprland with the desired profile:
 
-The DDC/CI brightness script is also desktop-specific. Disable its bindings or
-adapt `brightness-ddc.sh` if your monitor does not support DDC/CI.
+```bash
+HYPRLAND_PROFILE=yafte-desktop Hyprland
+```
 
-## Project status
-
-The migration plan and current validation status are documented in
-[docs/migracion-arch-hyprland.md](docs/migracion-arch-hyprland.md).
+The orientation shortcut (`Super + Ctrl + O`) is enabled only by profiles that
+define an `orientation` section. The DDC/CI brightness script is also optional;
+remove or adapt its bindings when the display does not support DDC/CI.
 
 ## License
 

@@ -1,16 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-output="HDMI-A-2"
-mode="1920x1080@60"
-position="3440x0"
-waybar_dir="$HOME/.config/waybar"
+action="${1:-toggle}"
+[[ $# -gt 0 ]] && shift
+
+output=""
+mode=""
+position=""
+initial="vertical"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --output) output="$2"; shift 2 ;;
+    --mode) mode="$2"; shift 2 ;;
+    --position) position="$2"; shift 2 ;;
+    --initial) initial="$2"; shift 2 ;;
+    *) printf 'Unknown option: %s\n' "$1" >&2; exit 2 ;;
+  esac
+done
+
+[[ -n "$output" && -n "$mode" && -n "$position" ]] || {
+  printf 'Usage: %s [toggle|apply] --output OUTPUT --mode MODE --position POSITION [--initial horizontal|vertical]\n' "${0##*/}" >&2
+  exit 2
+}
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hypr"
 state_file="$state_dir/${output,,}-orientation"
-
-monitor_is_active() {
-  hyprctl monitors -j 2>/dev/null | jq -e --arg monitor "$1" '.[] | select(.name == $monitor)' >/dev/null
-}
 
 current_orientation() {
   local transform
@@ -27,15 +41,10 @@ apply_orientation() {
 restart_waybar() {
   pkill -x waybar 2>/dev/null || true
   sleep 0.2
-  if [[ "$(current_orientation)" == "vertical" ]]; then
-    monitor_is_active "HDMI-A-1" && waybar --config "$waybar_dir/config-horizontal.jsonc" --style "$waybar_dir/style.css" >/dev/null 2>&1 &
-    monitor_is_active "$output" && waybar --config "$waybar_dir/config-vertical.jsonc" --style "$waybar_dir/style-vertical.css" >/dev/null 2>&1 &
-  else
-    waybar --config "$waybar_dir/config.jsonc" --style "$waybar_dir/style.css" >/dev/null 2>&1 &
-  fi
+  waybar >/dev/null 2>&1 &
 }
 
-case "${1:-toggle}" in
+case "$action" in
   toggle)
     [[ "$(current_orientation)" == "vertical" ]] && orientation="horizontal" || orientation="vertical"
     apply_orientation "$orientation"
@@ -45,12 +54,12 @@ case "${1:-toggle}" in
     restart_waybar
     ;;
   apply)
-    orientation="vertical"
+    orientation="$initial"
     [[ -r "$state_file" ]] && orientation="$(<"$state_file")"
     [[ "$orientation" == "horizontal" || "$orientation" == "vertical" ]] || orientation="vertical"
     apply_orientation "$orientation"
     sleep 0.2
     restart_waybar
     ;;
-  *) printf 'Uso: %s [toggle|apply]\n' "${0##*/}" >&2; exit 2 ;;
+  *) printf 'Usage: %s [toggle|apply] --output OUTPUT --mode MODE --position POSITION [--initial horizontal|vertical]\n' "${0##*/}" >&2; exit 2 ;;
 esac
