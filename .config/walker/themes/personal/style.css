@@ -1,18 +1,35 @@
 /* colors.css is refreshed by ~/.config/themes/set-theme. */
 @import url("colors.css");
 
+* { all: unset; }
+
+.normal-icons { -gtk-icon-size: 16px; }
+.large-icons { -gtk-icon-size: 32px; }
+
 .box-wrapper {
   background: alpha(@window_bg_color, 0.98);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.38);
   border: 2px solid @accent_bg_color;
   border-radius: 14px;
   padding: 16px;
 }
-.input { background: @surface_color; color: @theme_fg_color; border-radius: 9px; padding: 10px 14px; }
-.input:focus { outline: 1px solid @accent_bg_color; }
-.item-box { border-radius: 9px; margin: 3px 4px; padding: 10px 12px; }
-child:selected .item-box, child:hover .item-box { background: @selected_bg_color; }
+.input {
+  background: @surface_color;
+  color: @theme_fg_color;
+  caret-color: @theme_fg_color;
+  border-radius: 9px;
+  padding: 10px 14px;
+}
+.input selection { background: @selected_bg_color; }
+.input placeholder { color: @muted_fg_color; opacity: 0.9; }
+.list { color: @theme_fg_color; }
+.item-box { background: @window_bg_color; border-radius: 9px; margin: 3px 4px; padding: 10px 12px; }
+child:selected .item-box, row:selected .item-box, child:hover .item-box { background: @selected_bg_color; }
 .item-text { color: @theme_fg_color; font-weight: 600; }
 .item-subtext, .placeholder, .elephant-hint, .keybinds { color: @muted_fg_color; }
+.item-quick-activation { background: alpha(@accent_bg_color, 0.25); color: @theme_fg_color; border-radius: 5px; padding: 6px 8px; }
 .preview { border: 1px solid alpha(@accent_bg_color, 0.45); border-radius: 10px; overflow: hidden; }
 .preview-box { background: @window_bg_color; }
+.keybinds { border-top: 1px solid @surface_color; padding-top: 10px; }
+.keybind-label { border: 1px solid @muted_fg_color; border-radius: 4px; padding: 2px 4px; }
 scrollbar { opacity: 0; }

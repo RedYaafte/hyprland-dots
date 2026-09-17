@@ -3,6 +3,7 @@ require("layouts.spiral")
 require("apps.walker")
 
 local home = os.getenv("HOME") or ""
+local config_home = os.getenv("XDG_CONFIG_HOME") or (home .. "/.config")
 local theme = {
     active_border = "rgba(9370dbff)",
     inactive_border = "rgba(9370db55)",
@@ -10,8 +11,19 @@ local theme = {
 local loaded, selected = pcall(dofile, home .. "/.config/themes/current/hyprland.lua")
 if loaded and type(selected) == "table" then theme = selected end
 
-local profile_name = os.getenv("HYPRLAND_PROFILE") or "default"
-local profile_path = home .. "/.config/hypr/profiles/" .. profile_name .. ".lua"
+local profile_name = os.getenv("HYPRLAND_PROFILE")
+if not profile_name then
+    local profile_file = io.open(config_home .. "/hypr/profile", "r")
+    if profile_file then
+        profile_name = profile_file:read("*l")
+        profile_file:close()
+    end
+end
+if type(profile_name) ~= "string" or not profile_name:match("^[%w_-]+$") then
+    profile_name = "default"
+end
+
+local profile_path = config_home .. "/hypr/profiles/" .. profile_name .. ".lua"
 local profile = {
     monitors = { { output = "", mode = "preferred", position = "auto", scale = 1 } },
 }
@@ -26,6 +38,7 @@ local scripts = home .. "/.config/hypr/scripts/"
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("hyprpaper &")
+    hl.exec_cmd("waybar")
     if profile.orientation then
         local rotation = profile.orientation
         hl.exec_cmd(string.format(

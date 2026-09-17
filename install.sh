@@ -48,6 +48,14 @@ for name in "${configs[@]}"; do
     printf 'Installed %s\n' "$name"
 done
 
+# Monitor profiles are user-owned. A reinstallation never replaces the
+# selected profile; change this file to opt into a machine-specific layout.
+profile_file="$config_dir/hypr/profile"
+if [[ ! -e "$profile_file" ]]; then
+    printf 'default\n' > "$profile_file"
+    printf 'Selected monitor profile: default\n'
+fi
+
 # New installations use Black Ember. Preserve an existing theme selection.
 if [[ -d "$config_dir/themes/black-ember" && ! -e "$config_dir/themes/current" ]]; then
     ln -s "black-ember" "$config_dir/themes/current"

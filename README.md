@@ -106,13 +106,15 @@ Time-based and video wallpaper shortcuts use this separate structure:
 ## Hardware profiles
 
 The default profile uses every monitor's preferred mode and requires no output
-names. Your current ultrawide-plus-vertical-monitor layout is preserved in the
-optional `yafte-desktop` profile. Start Hyprland with the desired profile:
+names. It cannot infer a display's physical rotation. Your current
+ultrawide-plus-vertical-monitor layout is preserved in the optional
+`yafte-desktop` profile. Select it persistently for a user with:
 
 ```bash
-HYPRLAND_PROFILE=yafte-desktop Hyprland
+printf 'yafte-desktop\n' > ~/.config/hypr/profile
 ```
 
+`HYPRLAND_PROFILE=yafte-desktop` remains available as a one-session override.
 The orientation shortcut (`Super + Ctrl + O`) is enabled only by profiles that
 define an `orientation` section. The DDC/CI brightness script is also optional;
 remove or adapt its bindings when the display does not support DDC/CI.
