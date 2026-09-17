@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Fullscreen terminal screensaver. Any key, or moving focus away, closes it.
+set -euo pipefail
+
+cleanup() {
+  hyprctl keyword cursor:invisible false >/dev/null 2>&1 || true
+  printf '\033[?25h\033[0m\n'
+}
+
+trap cleanup EXIT INT TERM HUP QUIT
+hyprctl keyword cursor:invisible true >/dev/null 2>&1 || true
+printf '\033[?25l'
+
+while true; do
+  if ! hyprctl activewindow 2>/dev/null | grep -q 'class: dev.yafte.screensaver'; then
+    exit 0
+  fi
+
+  printf '\033[2J\033[H\033[38;5;141m\n\n\n'
+  printf '                         %s\n\n' "$(date '+%H:%M:%S')"
+  printf '\033[38;5;250m                 Pulsa cualquier tecla para volver\033[0m'
+
+  # read returns successfully when a key is pressed; the timeout updates clock.
+  if read -r -s -n 1 -t 1; then
+    exit 0
+  fi
+done

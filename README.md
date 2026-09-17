@@ -1,37 +1,43 @@
-# hyprland-dots 🌙
+# hyprland-dots
 
-Mi configuración personal de Hyprland para Arch/EndeavourOS.
+A personal, keyboard-first Hyprland setup for Arch Linux and EndeavourOS. It
+is designed to be portable, independent from Omarchy, and usable as a base for
+a clean Arch installation.
 
-## Preview
+## Highlights
 
-> *(agrega screenshots en `screenshots/` y actualiza aquí)*
+- Hyprland Lua configuration with a custom Spiral layout.
+- Walker as the primary launcher, powered by Elephant for personal theme
+  selection and wallpaper previews.
+- A standalone system menu for lock, suspend, logout, reboot, shutdown, and a
+  lightweight terminal screensaver.
+- The **Black Ember** theme: charcoal, burnt steel, aged bronze, and restrained
+  ember highlights.
+- Theme-aware Walker, Waybar, SwayOSD, Hyprland, Ghostty, and wallpapers.
+- Separate horizontal and vertical Black Ember wallpapers.
+- Dynamic time-based or video wallpapers remain available through shortcuts.
+- Multimedia controls, SwayOSD volume feedback, DDC/CI monitor brightness, and
+  a persistent monitor-orientation toggle.
 
 ## Stack
 
-| Componente | Herramienta |
-|---|---|
+| Component | Tool |
+| --- | --- |
 | Compositor | [Hyprland](https://hyprland.org) |
 | Terminal | [Ghostty](https://ghostty.org) |
+| Launcher | [Walker](https://github.com/abenz1267/walker) + Elephant |
 | Bar | [Waybar](https://github.com/Alexays/Waybar) |
-| Launcher | [Rofi](https://github.com/davatorium/rofi) |
-| Notificaciones | [Dunst](https://dunst-project.org) |
+| Notifications | [Dunst](https://dunst-project.org) |
 | Lock screen | [Hyprlock](https://github.com/hyprwm/hyprlock) |
 | Idle daemon | [Hypridle](https://github.com/hyprwm/hypridle) |
-| Wallpaper | [Hyprpaper](https://github.com/hyprwm/hyprpaper) + [mpvpaper](https://github.com/GhostNaN/mpvpaper) |
-| File manager | [Yazi](https://yazi-rs.github.io) |
-| Editor | Neovim (minimalista, sin plugins) |
-| Font | JetBrainsMono Nerd Font |
+| Wallpaper | Hyprpaper + mpvpaper |
+| File manager | Dolphin + Yazi |
+| Shell font | JetBrainsMono Nerd Font |
 
-## Características
+## Installation
 
-- **Wallpapers dinámicos** por hora del día (morning/afternoon/night) + modo video con mpvpaper
-- **Waybar** con doble barra: módulos de sistema, Spotify, cava visualizer, power menu
-- **Tema oscuro** consistente basado en colores Catppuccin Mocha
-- **Ghostty** con greeting script (figlet + lolcat + frases + Linear issues)
-- **Hyprlock** con blur de pantalla, reloj y campo de contraseña con gradiente
-- Layout **master** con mfact 0.70
-
-## Instalación
+> This project is still being validated for clean Arch installations. Test it
+> in a VM or a secondary user account before applying it to an existing desktop.
 
 ```bash
 git clone https://github.com/yafte/hyprland-dots
@@ -40,55 +46,72 @@ chmod +x install.sh
 ./install.sh
 ```
 
-### Dependencias
+The installer copies the included configuration to `~/.config`. On a fresh
+installation, it selects Black Ember as the default theme.
+
+### Dependencies
 
 ```bash
-# Arch / EndeavourOS
-paru -S hyprland hyprpaper hyprlock hypridle waybar rofi dunst ghostty \
-        mpvpaper grim slurp wl-clipboard cliphist playerctl \
-        brightnessctl wireplumber pipewire nerd-fonts-jetbrains-mono \
-        yazi figlet lolcat
+# Arch Linux / EndeavourOS
+paru -S hyprland hyprpaper hyprlock hypridle waybar walker elephant-all \
+  dunst ghostty mpvpaper grim slurp wl-clipboard cliphist playerctl jq \
+  brightnessctl ddcutil swayosd polkit-kde-agent uwsm wireplumber pipewire \
+  nerd-fonts-jetbrains-mono yazi figlet lolcat
 ```
 
-### Wallpapers
+## Black Ember wallpapers
 
-Los wallpapers no están incluidos en el repo. Organízalos así:
+Black Ember expects these optional personal assets:
 
+```text
+~/Wallpapers/black_ember/
+├── black-ember-watercolor-horizontal.png
+└── black-ember-watercolor-vertical.png
 ```
+
+The wallpaper script applies the horizontal image to regular monitors and the
+vertical image to monitors rotated with transform `1` or `3`.
+
+Time-based and video wallpaper shortcuts use this separate structure:
+
+```text
 ~/Wallpapers/
-├── morning/    # imágenes para 06:00–12:00
-├── afternoon/  # imágenes para 12:00–19:00
-├── night/      # imágenes para 19:00–06:00
-└── video/      # videos .mp4 para mpvpaper
+├── morning/
+├── afternoon/
+├── night/
+└── video/
 ```
 
-Atajos para cambiar modo manualmente:
-- `Super + F5` → morning
-- `Super + F6` → afternoon  
-- `Super + F7` → night
-- `Super + F8` → video
+## Key bindings
 
-### Variables de entorno opcionales
+| Binding | Action |
+| --- | --- |
+| `Super + Q` | Open Ghostty |
+| `Super + W` | Close focused window |
+| `Super + E` | Open Dolphin |
+| `Super + Space` | Open Walker |
+| `Super + Alt + Space` | Open the system menu |
+| `Super + Ctrl + T` | Open the personal theme selector |
+| `Super + L` | Lock the session |
+| `Super + V` | Toggle the focused window's floating state |
+| `Super + Return` | Rotate the Spiral layout |
+| `Super + F5` to `F8` | Morning, afternoon, night, and video wallpapers |
+| `Print` / `Shift + Print` | Region / full-screen screenshot to clipboard |
 
-```bash
-# Para el greeting de Ghostty con Linear
-export LINEAR_API_KEY="tu_api_key_aqui"
-```
+## Hardware notes
 
-## Keybinds principales
+The default Lua configuration currently includes a desktop-specific ultrawide
+monitor and a vertically rotated secondary monitor. Adjust the monitor section
+in `~/.config/hypr/hyprland.lua` before using it on another machine.
 
-| Atajo | Acción |
-|---|---|
-| `Super + Q` | Terminal (Ghostty) |
-| `Super + R` | Launcher (Rofi) |
-| `Super + E` | File manager (Dolphin) |
-| `Super + C` | Cerrar ventana |
-| `Super + L` | Bloquear pantalla |
-| `Super + V` | Toggle flotante |
-| `Super + Return` | Swap con master |
-| `Print` | Screenshot región → clipboard |
-| `Shift + Print` | Screenshot completo → clipboard |
+The DDC/CI brightness script is also desktop-specific. Disable its bindings or
+adapt `brightness-ddc.sh` if your monitor does not support DDC/CI.
 
-## Licencia
+## Project status
 
-MIT
+The migration plan and current validation status are documented in
+[docs/migracion-arch-hyprland.md](docs/migracion-arch-hyprland.md).
+
+## License
+
+[MIT](LICENSE)

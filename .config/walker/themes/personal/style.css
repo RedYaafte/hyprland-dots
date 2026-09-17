@@ -1,0 +1,18 @@
+/* colors.css is refreshed by ~/.config/themes/set-theme. */
+@import url("colors.css");
+
+.box-wrapper {
+  background: alpha(@window_bg_color, 0.98);
+  border: 2px solid @accent_bg_color;
+  border-radius: 14px;
+  padding: 16px;
+}
+.input { background: @surface_color; color: @theme_fg_color; border-radius: 9px; padding: 10px 14px; }
+.input:focus { outline: 1px solid @accent_bg_color; }
+.item-box { border-radius: 9px; margin: 3px 4px; padding: 10px 12px; }
+child:selected .item-box, child:hover .item-box { background: @selected_bg_color; }
+.item-text { color: @theme_fg_color; font-weight: 600; }
+.item-subtext, .placeholder, .elephant-hint, .keybinds { color: @muted_fg_color; }
+.preview { border: 1px solid alpha(@accent_bg_color, 0.45); border-radius: 10px; overflow: hidden; }
+.preview-box { background: @window_bg_color; }
+scrollbar { opacity: 0; }

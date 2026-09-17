@@ -1,0 +1,8 @@
+/* colors.css is refreshed by ~/.config/themes/set-theme. */
+@import url("colors.css");
+window#osd { border-radius: 14px; border: 1px solid @osd-border; background: alpha(@osd-background, 0.96); }
+window#osd #container { margin: 16px 20px; }
+window#osd image, window#osd label { color: @osd-foreground; }
+window#osd progressbar { min-height: 7px; border-radius: 999px; background: transparent; }
+window#osd trough { min-height: inherit; border-radius: inherit; background: @osd-track; }
+window#osd progress { min-height: inherit; border-radius: inherit; background: @osd-accent; }

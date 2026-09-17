@@ -1,0 +1,5 @@
+[server]
+top_margin = 0.993
+duration = 1800
+show_percentage = false
+style = "~/.config/swayosd/style.css"

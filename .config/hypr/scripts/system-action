@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Actions selected from system-menu. Destructive actions require confirmation.
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+launcher="$script_dir/launch-walker"
+action="${1:?Uso: system-action <accion>}"
+
+confirm() {
+  local prompt="$1"
+  local choice
+  choice=$(printf '%s\n' 'Cancelar' 'Confirmar' | "$launcher" --dmenu \
+    --width 300 --minheight 1 --maxheight 180 -p "$prompt")
+  [[ "$choice" == 'Confirmar' ]]
+}
+
+case "$action" in
+  screensaver)
+    "$script_dir/launch-screensaver"
+    ;;
+  lock)
+    pidof hyprlock >/dev/null 2>&1 || hyprlock &
+    ;;
+  suspend)
+    confirm '¿Suspender sesión?' && loginctl suspend
+    ;;
+  logout)
+    confirm '¿Cerrar sesión?' || exit 0
+    if command -v uwsm >/dev/null 2>&1; then
+      uwsm stop
+    else
+      hyprctl dispatch exit
+    fi
+    ;;
+  restart)
+    confirm '¿Reiniciar equipo?' && systemctl reboot --no-wall
+    ;;
+  shutdown)
+    confirm '¿Apagar equipo?' && systemctl poweroff --no-wall
+    ;;
+  *)
+    printf 'Acción no válida: %s\n' "$action" >&2
+    exit 2
+    ;;
+esac

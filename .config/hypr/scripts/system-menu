@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Personal system menu, intentionally independent from Omarchy.
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+launcher="$script_dir/launch-walker"
+
+selection=$(printf '%s\n' \
+  '󱄄  Screensaver' \
+  '  Lock' \
+  '󰒲  Suspend' \
+  '󰍃  Logout' \
+  '󰜉  Restart' \
+  '󰐥  Shutdown' \
+  | "$launcher" --dmenu --width 360 --minheight 1 --maxheight 420 -p 'Sistema…')
+
+case "$selection" in
+  *Screensaver*) "$script_dir/system-action" screensaver ;;
+  *Lock*)        "$script_dir/system-action" lock ;;
+  *Suspend*)     "$script_dir/system-action" suspend ;;
+  *Logout*)      "$script_dir/system-action" logout ;;
+  *Restart*)     "$script_dir/system-action" restart ;;
+  *Shutdown*)    "$script_dir/system-action" shutdown ;;
+  *)             exit 0 ;;
+esac

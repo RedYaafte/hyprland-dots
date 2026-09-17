@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Launch a simple terminal screensaver without Omarchy assets or TTE.
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if ! command -v ghostty >/dev/null 2>&1; then
+  notify-send -u critical 'Screensaver no disponible' 'Ghostty no está instalado.'
+  exit 1
+fi
+
+setsid ghostty --class=dev.yafte.screensaver --title=Screensaver \
+  -e "$script_dir/screensaver" >/dev/null 2>&1 &

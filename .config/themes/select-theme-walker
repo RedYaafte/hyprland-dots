@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+systemctl --user start elephant.service >/dev/null 2>&1 || setsid elephant >/dev/null 2>&1 &
+if ! pgrep -f 'walker --gapplication-service' >/dev/null; then
+  systemctl --user start app-walker@autostart.service >/dev/null 2>&1 || setsid walker --gapplication-service >/dev/null 2>&1 &
+fi
+exec walker --provider menus:personalthemes --placeholder 'Seleccionar tema' --width 1180 --minheight 400 --maxheight 400
