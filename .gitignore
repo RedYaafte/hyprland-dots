@@ -20,6 +20,12 @@ screenshots/
 wallpapers/*.jpg  # Si quieres excluir wallpapers grandes
 wallpapers/*.png
 
+# Bundled default assets are versioned; personal wallpaper libraries are not.
+!assets/
+!assets/wallpapers/
+!assets/wallpapers/black-ember/
+!assets/wallpapers/black-ember/*.png
+
 # Archivos personales (si tienes datos sensibles)
 .config/hypr/hyprland.conf.bak
 .env

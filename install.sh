@@ -20,6 +20,9 @@ esac
 
 configs=(hypr waybar ghostty nvim dunst yazi mpv systemd themes elephant walker swayosd)
 backup_dir=""
+wallpaper_source_dir="$dotfiles_dir/assets/wallpapers/black-ember"
+# Override only for testing or a nonstandard wallpaper library location.
+wallpaper_destination_dir="${HYPRLAND_DOTS_WALLPAPER_DIR:-$HOME/Wallpapers/black_ember}"
 
 backup_existing() {
     local name="$1" destination="$2"
@@ -49,6 +52,20 @@ done
 if [[ -d "$config_dir/themes/black-ember" && ! -e "$config_dir/themes/current" ]]; then
     ln -s "black-ember" "$config_dir/themes/current"
     printf 'Selected default theme: Black Ember\n'
+fi
+
+# Black Ember includes a default wallpaper pair. Existing personal choices are
+# deliberately left untouched.
+if [[ -d "$wallpaper_source_dir" ]]; then
+    mkdir -p "$wallpaper_destination_dir"
+    for wallpaper in "$wallpaper_source_dir"/*; do
+        [[ -f "$wallpaper" ]] || continue
+        destination="$wallpaper_destination_dir/$(basename "$wallpaper")"
+        if [[ ! -e "$destination" ]]; then
+            cp -a "$wallpaper" "$destination"
+            printf 'Installed Black Ember wallpaper: %s\n' "$(basename "$wallpaper")"
+        fi
+    done
 fi
 
 scripts=(

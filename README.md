@@ -64,7 +64,8 @@ paru -S hyprland hyprpaper hyprlock hypridle waybar walker elephant-all \
 
 ## Black Ember wallpapers
 
-Black Ember expects these optional personal assets:
+Black Ember ships with its default wallpaper pair. The installer copies them
+without overwriting files that already exist at:
 
 ```text
 ~/Wallpapers/black_ember/
@@ -73,7 +74,8 @@ Black Ember expects these optional personal assets:
 ```
 
 The wallpaper script applies the horizontal image to regular monitors and the
-vertical image to monitors rotated with transform `1` or `3`.
+vertical image to monitors rotated with transform `1` or `3`. You can replace
+either file with a personal variant while retaining the same filenames.
 
 Time-based and video wallpaper shortcuts use this separate structure:
 
